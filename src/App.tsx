@@ -1,16 +1,27 @@
 import React from "react";
 import { ThemeProvider } from "@mui/material";
-import Dashboard from "./components/Dashboard";
 import { theme, themeDark } from "./config/ThemeConfig";
 import useDarkMode from "./hooks/useDarkMode";
-
+import { AuthProvider } from "./context/AuthProvider";
+import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import PrivateRoute from "./routes/PrivateRoute";
+import { DashboardRoutes } from "./routes/DashboardRoutes";
+import { AuthRoutes } from "./routes/AuthRoutes";
 
 function App() {
-  const { isDarkMode, toggle } = useDarkMode();
+  const { isDarkMode } = useDarkMode();
 
   return (
     <ThemeProvider theme={isDarkMode ? themeDark : theme}>
-      <Dashboard changeTheme={toggle} />
+      <AuthProvider>
+        <Router>
+          <Switch>
+            <PrivateRoute exact path="/dashboard" component={DashboardRoutes} />
+            <Route path="/auth" component={AuthRoutes} />
+            <Redirect to="/auth" from="/" />
+          </Switch>
+        </Router>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

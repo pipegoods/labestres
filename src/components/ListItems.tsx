@@ -2,7 +2,6 @@ import * as React from "react";
 import SettingsIcon from "@mui/icons-material/Settings";
 import DirectionsRunIcon from "@mui/icons-material/DirectionsRun";
 import LogoutIcon from "@mui/icons-material/Logout";
-
 import {
   Avatar,
   ListItem,
@@ -13,6 +12,8 @@ import {
 } from "@mui/material";
 import useReadLocalStorage from "../hooks/useReadLocalStorage";
 import { IReporte } from "../interfaces/IReporte";
+import { getAuth, signOut } from "firebase/auth";
+import { useHistory } from "react-router-dom";
 
 interface PropsMain {
   reportes: IReporte[];
@@ -55,6 +56,23 @@ export const MainListItems = ({
 
 export const SecondaryListItems = () => {
   const darkMode = useReadLocalStorage("darkMode");
+  const history = useHistory();
+
+  const handleClick = (event: any) => {
+    event.preventDefault();
+
+    const auth = getAuth();
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        history.push("/auth/login");
+      })
+      .catch((error) => {
+        // An error happened.
+        console.log(error);
+        
+      });
+  };
 
   return (
     <div>
@@ -67,7 +85,7 @@ export const SecondaryListItems = () => {
         </ListItemIcon>
         <ListItemText primary="Configuración" />
       </ListItem>
-      <ListItem button>
+      <ListItem button onClick={handleClick}>
         <ListItemIcon>
           <Avatar>
             <LogoutIcon color={darkMode ? "inherit" : "primary"} />

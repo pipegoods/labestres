@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiDrawer from "@mui/material/Drawer";
@@ -12,7 +12,6 @@ import IconButton from "@mui/material/IconButton";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
-import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
@@ -29,7 +28,6 @@ import {
   query,
   Timestamp,
 } from "firebase/firestore";
-import db from "../config/firebaseConfig";
 import { IRegistro, IReporte } from "../interfaces/IReporte";
 import Skeleton from "@mui/material/Skeleton";
 import ChartComponent from "./ChartComponent";
@@ -38,24 +36,11 @@ import {
   separarIntervalos,
   timestamptodate,
 } from "../lib/ecuaciones.lib";
-
-function Copyright(props: any) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
-        IoT - Estres Laboral
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import { db } from "../config/firebaseConfig";
+import CopyrightFooter from "./CopyrightFooter";
+import { useHistory } from "react-router-dom";
+import useDarkMode from "../hooks/useDarkMode";
+import { AuthContext } from "../context/AuthProvider";
 
 const drawerWidth: number = 240;
 
@@ -107,11 +92,11 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-interface Props {
-  changeTheme: () => void;
-}
+function DashboardContent() {
+  const { toggle } = useDarkMode();
+  const { user } = useContext(AuthContext);
 
-function DashboardContent({ changeTheme }: Props) {
+  const history = useHistory();
   const initialReporte: IReporte = {
     id: "",
     nombreActividad: "",
@@ -144,7 +129,6 @@ function DashboardContent({ changeTheme }: Props) {
       querySnapshot.forEach((doc) => {
         setloader(false);
         // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, " => ", doc.data());
         let { bpm, rr, createdAt } = doc.data();
         setregistro((oldRegistro) => [
           ...oldRegistro,
@@ -163,6 +147,10 @@ function DashboardContent({ changeTheme }: Props) {
   };
 
   useEffect(() => {
+    if (user === null) {
+      history.push("/auth/login");
+    }
+
     const obtenerDocumentos = async () => {
       const q = query(collection(db, "registroRR"));
       onSnapshot(q, (querySnapshot) => {
@@ -181,7 +169,7 @@ function DashboardContent({ changeTheme }: Props) {
     };
 
     obtenerDocumentos();
-  }, []);
+  }, [history, user]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -213,7 +201,7 @@ function DashboardContent({ changeTheme }: Props) {
           >
             Hola, Andrés Vizcaíno 😎
           </Typography>
-          <IconButton color="inherit" onClick={changeTheme}>
+          <IconButton color="inherit" onClick={toggle}>
             <Brightness4Icon />
           </IconButton>
         </Toolbar>
@@ -354,7 +342,7 @@ function DashboardContent({ changeTheme }: Props) {
               </Paper>
             </Grid>
           </Grid>
-          <Copyright sx={{ pt: 4 }} />
+          <CopyrightFooter sx={{ pt: 4 }} />
         </Container>
       </Box>
     </Box>
