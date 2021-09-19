@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { useHistory } from "react-router-dom";
 
 type ContextProps = {
   user: User | null;
@@ -13,6 +14,8 @@ export const AuthContext = React.createContext<Partial<ContextProps>>({});
 export const AuthProvider = ({ children }: any) => {
   const [user, setUser] = useState<User | null>(null as User | null);
   const [loadingAuthState, setLoadingAuthState] = useState<boolean>(true);
+  const history = useHistory();
+
   useEffect(() => {
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
@@ -23,14 +26,14 @@ export const AuthProvider = ({ children }: any) => {
         setUser(user);
         setLoadingAuthState(false);
         console.log('Usuario ya autenticado: ', user.email);
-        
+        history.push("/dashboard");
       } else {
         // User is signed out
         // ...
         setLoadingAuthState(false);
       }
     });
-  }, []);
+  }, [history]);
 
   return (
     <AuthContext.Provider

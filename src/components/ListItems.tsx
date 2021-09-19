@@ -14,6 +14,7 @@ import useReadLocalStorage from "../hooks/useReadLocalStorage";
 import { IReporte } from "../interfaces/IReporte";
 import { getAuth, signOut } from "firebase/auth";
 import { useHistory } from "react-router-dom";
+import { IViewDashboard } from "../interfaces/IDashboard";
 
 interface PropsMain {
   reportes: IReporte[];
@@ -54,11 +55,15 @@ export const MainListItems = ({
   );
 };
 
-export const SecondaryListItems = () => {
+interface PropsSecon {
+  toggleDashboard(data: IViewDashboard): void;
+}
+
+export const SecondaryListItems = ({ toggleDashboard }: PropsSecon) => {
   const darkMode = useReadLocalStorage("darkMode");
   const history = useHistory();
 
-  const handleClick = (event: any) => {
+  const singOut = (event: any) => {
     event.preventDefault();
 
     const auth = getAuth();
@@ -70,14 +75,22 @@ export const SecondaryListItems = () => {
       .catch((error) => {
         // An error happened.
         console.log(error);
-        
       });
   };
 
   return (
     <div>
       <ListSubheader inset>Configuración</ListSubheader>
-      <ListItem button>
+      <ListItem
+        button
+        onClick={() =>
+          toggleDashboard({
+            viewReportes: false,
+            viewCrear: false,
+            viewConfig: true,
+          })
+        }
+      >
         <ListItemIcon>
           <Avatar>
             <SettingsIcon color={darkMode ? "inherit" : "primary"} />
@@ -85,7 +98,7 @@ export const SecondaryListItems = () => {
         </ListItemIcon>
         <ListItemText primary="Configuración" />
       </ListItem>
-      <ListItem button onClick={handleClick}>
+      <ListItem button onClick={singOut}>
         <ListItemIcon>
           <Avatar>
             <LogoutIcon color={darkMode ? "inherit" : "primary"} />

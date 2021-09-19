@@ -3,7 +3,12 @@ import { ThemeProvider } from "@mui/material";
 import { theme, themeDark } from "./config/ThemeConfig";
 import useDarkMode from "./hooks/useDarkMode";
 import { AuthProvider } from "./context/AuthProvider";
-import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from "react-router-dom";
 import PrivateRoute from "./routes/PrivateRoute";
 import { DashboardRoutes } from "./routes/DashboardRoutes";
 import { AuthRoutes } from "./routes/AuthRoutes";
@@ -13,15 +18,15 @@ function App() {
 
   return (
     <ThemeProvider theme={isDarkMode ? themeDark : theme}>
-      <AuthProvider>
-        <Router>
+      <Router>
+        <AuthProvider>
           <Switch>
             <PrivateRoute exact path="/dashboard" component={DashboardRoutes} />
             <Route path="/auth" component={AuthRoutes} />
             <Redirect to="/auth" from="/" />
           </Switch>
-        </Router>
-      </AuthProvider>
+        </AuthProvider>
+      </Router>
     </ThemeProvider>
   );
 }

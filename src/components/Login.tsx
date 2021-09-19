@@ -11,11 +11,20 @@ import GoogleIcon from "@mui/icons-material/Google";
 import { red } from "@mui/material/colors";
 import { AuthContext } from "../context/AuthProvider";
 import { useHistory } from "react-router-dom";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, User } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../config/firebaseConfig";
 
 export default function Login() {
   const authContext = useContext(AuthContext);
   const history = useHistory();
+
+  const saveDataUser = async (user : User) => {
+    await setDoc(doc(db, "usuarios", user.uid), {
+      name: user.displayName,
+      email: user.email
+    });
+  } 
 
   const signInGoogle = () => {
     const auth = getAuth();
@@ -30,6 +39,8 @@ export default function Login() {
         authContext.setUser(user);
         console.log(user, 'user');
         console.log("Token: ", token);
+
+        saveDataUser(user);
         
         history.push("/dashboard");
       })

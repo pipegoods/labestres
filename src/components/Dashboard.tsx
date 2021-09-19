@@ -9,14 +9,9 @@ import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Deposits from "./Deposits";
-import Orders from "./Orders";
 import { MainListItems, SecondaryListItems } from "./ListItems";
 import {
   collection,
@@ -29,18 +24,15 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { IRegistro, IReporte } from "../interfaces/IReporte";
-import Skeleton from "@mui/material/Skeleton";
-import ChartComponent from "./ChartComponent";
-import {
-  calcularIDM,
-  separarIntervalos,
-  timestamptodate,
-} from "../lib/ecuaciones.lib";
 import { db } from "../config/firebaseConfig";
 import CopyrightFooter from "./CopyrightFooter";
 import { useHistory } from "react-router-dom";
 import useDarkMode from "../hooks/useDarkMode";
 import { AuthContext } from "../context/AuthProvider";
+import { Avatar } from "@mui/material";
+import ViewReport from "./ViewReport";
+import { IViewDashboard } from "../interfaces/IDashboard";
+import ConfigView from "./ConfigView";
 
 const drawerWidth: number = 240;
 
@@ -109,12 +101,22 @@ function DashboardContent() {
   const [reporteSelected, setreporteSelected] =
     useState<IReporte>(initialReporte);
   const [loader, setloader] = useState<boolean>(false);
+  const [viewDashboard, setViewDashboard] = useState<IViewDashboard>({
+    viewReportes: false,
+    viewCrear: true,
+    viewConfig: false,
+  });
 
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
   const obtenerRegistroReporte = async (reporteToogle: IReporte) => {
+    setViewDashboard({
+      viewConfig: false,
+      viewCrear: false,
+      viewReportes: true,
+    });
     setreporteSelected(reporteToogle);
     setregistro([]);
     setloader(true);
@@ -192,6 +194,11 @@ function DashboardContent() {
           >
             <MenuIcon />
           </IconButton>
+          <Avatar
+            sx={{ mx: 2 }}
+            alt={"Foto de " + user?.displayName}
+            src={user?.photoURL ? user.photoURL : undefined}
+          />
           <Typography
             component="h1"
             variant="h6"
@@ -199,7 +206,7 @@ function DashboardContent() {
             noWrap
             sx={{ flexGrow: 1 }}
           >
-            Hola, Andrés Vizcaíno 😎
+            Hola, {user?.displayName} 😎
           </Typography>
           <IconButton color="inherit" onClick={toggle}>
             <Brightness4Icon />
@@ -229,7 +236,7 @@ function DashboardContent() {
         </List>
         <Divider />
         <List>
-          <SecondaryListItems />
+          <SecondaryListItems toggleDashboard={setViewDashboard} />
         </List>
       </Drawer>
       <Box
@@ -245,105 +252,13 @@ function DashboardContent() {
         }}
       >
         <Toolbar />
-        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <Grid container spacing={3}>
-            {/* Chart */}
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  height: 240,
-                }}
-              >
-                {loader ? (
-                  <>
-                    <Skeleton variant="text" width="100%" height="100%" />
-                    <Skeleton variant="text" width="100%" height="100%" />
-                    <Skeleton variant="text" width="100%" height="100%" />
-                    <Skeleton variant="text" width="100%" height="100%" />
-                  </>
-                ) : (
-                  <ChartComponent
-                    data={timestamptodate(registro)}
-                    x="createdAt"
-                    y="bpm"
-                    titulo="Ritmo Cardiaco"
-                    typeLine="natural"
-                  />
-                )}
-              </Paper>
-            </Grid>
-            {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  height: 240,
-                }}
-              >
-                <Deposits />
-              </Paper>
-            </Grid>
+        {viewDashboard.viewReportes ? (
+          <ViewReport loader={loader} registro={registro} />
+        ) : null}
 
-            {/* Chart */}
-            <Grid item xs={12} md={6} lg={6}>
-              <Paper
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  height: 240,
-                }}
-              >
-                {loader ? (
-                  <Skeleton variant="text" width="100%" height="100%" />
-                ) : (
-                  <ChartComponent
-                    data={timestamptodate(registro)}
-                    x="createdAt"
-                    y="rr"
-                    titulo="Variación del RR"
-                    typeLine="natural"
-                  />
-                )}
-              </Paper>
-            </Grid>
-            {/* Chart */}
-            <Grid item xs={12} md={6} lg={6}>
-              <Paper
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  height: 240,
-                }}
-              >
-                {registro.length > 0 ? (
-                  <ChartComponent
-                    data={calcularIDM(separarIntervalos(registro))}
-                    x="hora"
-                    y="is"
-                    titulo="Indice 1: Relajado, 2: Normal, 3: Estresado"
-                    typeLine="step"
-                  />
-                ) : (
-                  <Skeleton variant="text" width="100%" height="100%" />
-                )}
-              </Paper>
-            </Grid>
-            {/* Recent Orders */}
-            <Grid item xs={12}>
-              <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-                <Orders />
-              </Paper>
-            </Grid>
-          </Grid>
-          <CopyrightFooter sx={{ pt: 4 }} />
-        </Container>
+        {viewDashboard.viewConfig ? <ConfigView /> : null}
+
+        <CopyrightFooter sx={{ pt: 4 }} />
       </Box>
     </Box>
   );
