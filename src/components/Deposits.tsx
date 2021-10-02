@@ -1,21 +1,28 @@
-import * as React from 'react';
-import Title from './Title';
-import BluetoothIcon from '@mui/icons-material/Bluetooth';
-import { Button, Typography } from '@mui/material';
+import * as React from "react";
+import Title from "./Title";
+import BluetoothIcon from "@mui/icons-material/Bluetooth";
+import { Button, Typography } from "@mui/material";
 
-function preventDefault(event: React.MouseEvent) {
-  event.preventDefault();
+
+interface Props {
+  bpm: number;
+  rr: number;
+  stateMiband: boolean;
+  conectar () : void;
+  desconectar () : void;
 }
 
-export default function Deposits() {
+export default function Deposits({ bpm, rr, stateMiband, conectar, desconectar }: Props) {
   return (
     <React.Fragment>
-      <Title>Conectar Mi Band <BluetoothIcon /> </Title>
+      <Title>
+        Conectar Mi Band <BluetoothIcon />{" "}
+      </Title>
       <Typography component="p" variant="h5">
-        BPM: 77
+        BPM: {bpm}
       </Typography>
       <Typography component="p" variant="h5">
-        RR: 779
+        RR: {rr}
       </Typography>
       <Typography component="p" variant="h6">
         Estado Actual: 😡🤓😌
@@ -24,7 +31,15 @@ export default function Deposits() {
         Haciendo las compras en el D1
       </Typography>
       <div>
-        <Button variant="text" onClick={preventDefault}>Conectar</Button>
+        {stateMiband ? (
+          <Button variant="text" color="error" onClick={desconectar}>
+            Desconectar
+          </Button>
+        ) : (
+          <Button variant="text" onClick={conectar}>
+            Conectar
+          </Button>
+        )}
       </div>
     </React.Fragment>
   );

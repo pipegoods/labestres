@@ -11,20 +11,37 @@ import GoogleIcon from "@mui/icons-material/Google";
 import { red } from "@mui/material/colors";
 import { AuthContext } from "../context/AuthProvider";
 import { useHistory } from "react-router-dom";
-import { getAuth, signInWithPopup, GoogleAuthProvider, User } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  User,
+} from "firebase/auth";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 
 export default function Login() {
   const authContext = useContext(AuthContext);
   const history = useHistory();
 
-  const saveDataUser = async (user : User) => {
-    await setDoc(doc(db, "usuarios", user.uid), {
-      name: user.displayName,
-      email: user.email
-    });
-  } 
+  const saveDataUser = async (user: User) => {
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      await updateDoc(docRef, {
+        name: user.displayName,
+        email: user.email,
+        photo: user.photoURL,
+      });
+    } else {
+      await setDoc(docRef, {
+        name: user.displayName,
+        email: user.email,
+        photo: user.photoURL,
+      });
+    }
+  };
 
   const signInGoogle = () => {
     const auth = getAuth();
@@ -37,11 +54,11 @@ export default function Login() {
         const user = result.user;
         // ...
         authContext.setUser(user);
-        console.log(user, 'user');
+        console.log(user, "user");
         console.log("Token: ", token);
 
         saveDataUser(user);
-        
+
         history.push("/dashboard");
       })
       .catch((error) => {
@@ -55,7 +72,6 @@ export default function Login() {
         // // ...
 
         console.error(errorMessage);
-        
       });
   };
 

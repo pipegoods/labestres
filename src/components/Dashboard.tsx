@@ -13,6 +13,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import { MainListItems, SecondaryListItems } from "./ListItems";
+import BluetoothAudioIcon from "@mui/icons-material/BluetoothAudio";
 import {
   collection,
   doc,
@@ -29,10 +30,18 @@ import CopyrightFooter from "./CopyrightFooter";
 import { useHistory } from "react-router-dom";
 import useDarkMode from "../hooks/useDarkMode";
 import { AuthContext } from "../context/AuthProvider";
-import { Avatar } from "@mui/material";
+import {
+  Avatar,
+  Container,
+  Grid,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import ViewReport from "./ViewReport";
 import { IViewDashboard } from "../interfaces/IDashboard";
 import ConfigView from "./ConfigView";
+import NewReport from "./NewReport";
 
 const drawerWidth: number = 240;
 
@@ -93,6 +102,8 @@ function DashboardContent() {
     id: "",
     nombreActividad: "",
     createdAt: Timestamp.now(),
+    idUser: "",
+    registro: [],
   };
 
   const [open, setOpen] = useState(true);
@@ -118,34 +129,7 @@ function DashboardContent() {
       viewReportes: true,
     });
     setreporteSelected(reporteToogle);
-    setregistro([]);
-    setloader(true);
-    const docRef = doc(db, "registroRR", reporteToogle.id);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      const q = query(
-        collection(docRef, "registro"),
-        orderBy("createdAt", "asc")
-      );
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        setloader(false);
-        // doc.data() is never undefined for query doc snapshots
-        let { bpm, rr, createdAt } = doc.data();
-        setregistro((oldRegistro) => [
-          ...oldRegistro,
-          {
-            id: doc.id,
-            bpm,
-            rr,
-            createdAt,
-          },
-        ]);
-      });
-    } else {
-      // doc.data() will be undefined in this case
-      console.log("No such document!");
-    }
+    setregistro(reporteSelected.registro);
   };
 
   useEffect(() => {
@@ -164,6 +148,8 @@ function DashboardContent() {
               id: docITEM.id,
               nombreActividad: docITEM.data().nombreActividad,
               createdAt: docITEM.data().createdAt,
+              idUser: docITEM.data().idUser,
+              registro: [...docITEM.data().registro]
             },
           ]);
         });
@@ -197,7 +183,11 @@ function DashboardContent() {
           <Avatar
             sx={{ mx: 2 }}
             alt={"Foto de " + user?.displayName}
-            src={user?.photoURL ? user.photoURL : undefined}
+            src={
+              user?.photoURL
+                ? user.photoURL
+                : "https://i.blogs.es/285c7f/spiderman/840_560.jpg"
+            }
           />
           <Typography
             component="h1"
@@ -226,6 +216,30 @@ function DashboardContent() {
             <ChevronLeftIcon />
           </IconButton>
         </Toolbar>
+        <List>
+          <div>
+            <ListItem
+              button
+              onClick={() =>
+                setViewDashboard({
+                  viewConfig: false,
+                  viewReportes: false,
+                  viewCrear: true,
+                })
+              }
+            >
+              <ListItemIcon>
+                <Avatar>
+                  <BluetoothAudioIcon />
+                </Avatar>
+              </ListItemIcon>
+              <ListItemText
+                primary="Crear registro nuevo"
+                secondary="Mi band 4/5/6"
+              />
+            </ListItem>
+          </div>
+        </List>
         <Divider />
         <List>
           <MainListItems
@@ -253,8 +267,14 @@ function DashboardContent() {
       >
         <Toolbar />
         {viewDashboard.viewReportes ? (
-          <ViewReport loader={loader} registro={registro} />
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Grid container spacing={3}>
+              <ViewReport loader={loader} registro={registro} largeBpm={12} />
+            </Grid>
+          </Container>
         ) : null}
+
+        {viewDashboard.viewCrear ? <NewReport /> : null}
 
         {viewDashboard.viewConfig ? <ConfigView /> : null}
 

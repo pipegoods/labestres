@@ -85,10 +85,10 @@ const agregaMinutos = (dt: Date, minutos: number) => {
   return new Date(dt.getTime() + minutos * 60000);
 };
 
-export const separarIntervalos = (arrProps: IRegistro[]) => {
+export const separarIntervalos = (arrProps: IRegistro[], minutoIntervao : number) => {
   const arr = arrProps.slice();
   const arrReturn: RegistroIntervalo[] = [];
-  let ultimoDate: Date = agregaMinutos(arr[0].createdAt.toDate(), 1);
+  let ultimoDate: Date = agregaMinutos(arr[0].createdAt.toDate(), minutoIntervao);
   let arrRR: number[] = [];
   let bandera: boolean = false;
   arr.forEach((registro) => {
@@ -108,7 +108,7 @@ export const separarIntervalos = (arrProps: IRegistro[]) => {
         is: 0,
       });
       arrRR = [];
-      ultimoDate = agregaMinutos(registro.createdAt.toDate(), 1);
+      ultimoDate = agregaMinutos(registro.createdAt.toDate(), minutoIntervao);
     }
   });
 

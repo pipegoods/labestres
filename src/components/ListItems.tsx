@@ -15,6 +15,9 @@ import { IReporte } from "../interfaces/IReporte";
 import { getAuth, signOut } from "firebase/auth";
 import { useHistory } from "react-router-dom";
 import { IViewDashboard } from "../interfaces/IDashboard";
+import { AuthContext } from "../context/AuthProvider";
+import { IUserConifg } from "./ConfigView";
+import useUsers from "../hooks/useUsers";
 
 interface PropsMain {
   reportes: IReporte[];
@@ -28,29 +31,61 @@ export const MainListItems = ({
   reporteSelect,
 }: PropsMain) => {
   const darkMode = useReadLocalStorage("darkMode");
+  const { user } = React.useContext(AuthContext);
+  const configUser = useReadLocalStorage<IUserConifg>("configUser");
+  const { users } = useUsers();
+
   const theme = useTheme();
   return (
     <div>
       <ListSubheader inset>Reportes anteriores</ListSubheader>
-      {reportes.map((r) => (
-        <ListItem button key={r.id} onClick={() => toogleReporte(r)}>
-          <ListItemIcon>
-            <Avatar
-              sx={
-                reporteSelect.id === r.id
-                  ? { backgroundColor: theme.palette.primary.dark }
-                  : null
-              }
-            >
-              <DirectionsRunIcon color={darkMode ? "inherit" : "primary"} />
-            </Avatar>
-          </ListItemIcon>
-          <ListItemText
-            primary={r.nombreActividad}
-            secondary="Sep 1, 2021 : 13:30"
-          />
-        </ListItem>
-      ))}
+      {reportes
+        .filter((c) => c.idUser === user?.uid)
+        .map((r) => (
+          <ListItem button key={r.id} onClick={() => toogleReporte(r)}>
+            <ListItemIcon>
+              <Avatar
+                sx={
+                  reporteSelect.id === r.id
+                    ? { backgroundColor: theme.palette.primary.dark }
+                    : null
+                }
+              >
+                <DirectionsRunIcon color={darkMode ? "inherit" : "primary"} />
+              </Avatar>
+            </ListItemIcon>
+            <ListItemText
+              primary={r.nombreActividad}
+              secondary="Sep 1, 2021 : 13:30"
+            />
+          </ListItem>
+        ))}
+      {configUser?.userReports.length ? (
+        <ListSubheader inset>Reportes suscritos</ListSubheader>
+      ) : null}
+      {reportes
+        .filter((c) => configUser?.userReports.includes(c.idUser))
+        .map((r) => (
+          <ListItem button key={r.id} onClick={() => toogleReporte(r)}>
+            <ListItemIcon>
+              <Avatar
+                sx={
+                  reporteSelect.id === r.id
+                    ? { backgroundColor: theme.palette.primary.dark }
+                    : null
+                }
+              >
+                <DirectionsRunIcon color={darkMode ? "inherit" : "primary"} />
+              </Avatar>
+            </ListItemIcon>
+            <ListItemText
+              primary={r.nombreActividad}
+              secondary={users
+                .find((user) => user.uid === r.idUser)
+                ?.name.substring(0, 20)}
+            />
+          </ListItem>
+        ))}
     </div>
   );
 };
@@ -70,6 +105,7 @@ export const SecondaryListItems = ({ toggleDashboard }: PropsSecon) => {
     signOut(auth)
       .then(() => {
         // Sign-out successful.
+        localStorage.clear();
         history.push("/auth/login");
       })
       .catch((error) => {

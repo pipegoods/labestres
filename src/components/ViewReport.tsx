@@ -1,22 +1,24 @@
-import { Container, Grid, Paper, Skeleton } from "@mui/material";
+import { Grid, GridSize, Paper, Skeleton } from "@mui/material";
 import React from "react";
+import useReadLocalStorage from "../hooks/useReadLocalStorage";
 import { IRegistro } from "../interfaces/IReporte";
 import { calcularIDM, separarIntervalos, timestamptodate } from "../lib/ecuaciones.lib";
 import ChartComponent from "./ChartComponent";
-import Deposits from "./Deposits";
-import Orders from "./Orders";
+import { IUserConifg } from "./ConfigView";
 
 interface Props {
     loader : boolean;
     registro: IRegistro[];
+    largeBpm : number;
 }
 
-const ViewReport = ({loader, registro} : Props) => {
+const ViewReport = ({loader, registro, largeBpm} : Props) => {
+  const configUser = useReadLocalStorage<IUserConifg>('configUser');
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Grid container spacing={3}>
+    <>
         {/* Chart */}
-        <Grid item xs={12} md={8} lg={9}>
+        <Grid item xs={12} md={largeBpm as GridSize}>
           <Paper
             sx={{
               p: 2,
@@ -43,7 +45,7 @@ const ViewReport = ({loader, registro} : Props) => {
             )}
           </Paper>
         </Grid>
-        {/* Recent Deposits */}
+        {/* Recent Deposits
         <Grid item xs={12} md={4} lg={3}>
           <Paper
             sx={{
@@ -53,9 +55,9 @@ const ViewReport = ({loader, registro} : Props) => {
               height: 240,
             }}
           >
-            <Deposits />
+            CAMBIAR
           </Paper>
-        </Grid>
+        </Grid> */}
 
         {/* Chart */}
         <Grid item xs={12} md={6} lg={6}>
@@ -92,7 +94,7 @@ const ViewReport = ({loader, registro} : Props) => {
           >
             {registro.length > 0 ? (
               <ChartComponent
-                data={calcularIDM(separarIntervalos(registro))}
+                data={calcularIDM(separarIntervalos(registro, configUser ? parseInt(configUser.minuteIntervalos) : 1))}
                 x="hora"
                 y="is"
                 titulo="Indice 1: Relajado, 2: Normal, 3: Estresado"
@@ -104,13 +106,12 @@ const ViewReport = ({loader, registro} : Props) => {
           </Paper>
         </Grid>
         {/* Recent Orders */}
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
             <Orders />
           </Paper>
-        </Grid>
-      </Grid>
-    </Container>
+        </Grid> */}
+      </>
   );
 };
 

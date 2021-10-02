@@ -4,6 +4,8 @@ export interface IReporte {
   id: string;
   nombreActividad: string;
   createdAt: firestore.Timestamp;
+  idUser: string;
+  registro: IRegistro[]
 }
 
 export interface IRegistro {
