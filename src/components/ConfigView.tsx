@@ -13,11 +13,10 @@ import {
   Snackbar,
   Typography,
 } from "@mui/material";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext } from "react";
 import { AuthContext } from "../context/AuthProvider";
-import { doc, getDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
-import useLocalStorage from "../hooks/useLocalStorage";
 import ListUsers from "./ListUsers";
 import useUsers from "../hooks/useUsers";
 
@@ -27,60 +26,29 @@ export interface IUserConifg {
   uid: string;
   minuteIntervalos: string;
   authKey: string;
-  userReports: string[]
+  userReports: string[];
 }
 
 const ConfigView = () => {
-  const { user } = useContext(AuthContext);
+  const { user, configUser, setConfigUser } = useContext(AuthContext);
   const { users } = useUsers();
-
-  const [configUser, setConfigUser] = useLocalStorage<IUserConifg>(
-    "configUser",
-    {
-      uid: user ? user?.uid : "",
-      minuteIntervalos: "1",
-      authKey: "",
-      userReports: []
-    }
-  );
 
   const onSubmit = async () => {
     console.log(configUser);
-    await updateDoc(doc(db, "users", user ? user.uid : ""), {
-      minuteIntervalos: parseInt(configUser.minuteIntervalos),
-      authKey: configUser.authKey,
-    }).then((d) => {
-      setOpen(true);
-    });
+    if (configUser) {
+      await updateDoc(doc(db, "users", user ? user.uid : ""), {
+        minuteIntervalos: parseInt(configUser.minuteIntervalos),
+        authKey: configUser.authKey,
+      }).then((d) => {
+        setOpen(true);
+      });
+    }
   };
 
   const handleChange = (e: InputChange) => {
     e.preventDefault();
     setConfigUser({ ...configUser, [e.target.name]: e.target.value });
   };
-
-  useEffect(() => {
-    const obtenerDocumento = async () => {
-      const docRef = doc(db, "users", user ? user.uid : "");
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        console.log("Document data:", docSnap.data());
-        let { minuteIntervalos, authKey, userReports } = docSnap.data();
-        setConfigUser({
-          minuteIntervalos: minuteIntervalos ? minuteIntervalos : 1,
-          authKey: authKey ? authKey : "",
-          uid: docSnap.id,
-          userReports: userReports
-        });
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-      }
-    };
-
-    obtenerDocumento();
-  }, []);
 
   const [open, setOpen] = React.useState(false);
 
@@ -108,7 +76,7 @@ const ConfigView = () => {
               <Input
                 type="number"
                 name="minuteIntervalos"
-                value={configUser.minuteIntervalos}
+                value={configUser?.minuteIntervalos}
                 onChange={handleChange}
                 startAdornment={
                   <InputAdornment position="start">
@@ -135,7 +103,7 @@ const ConfigView = () => {
               <Input
                 type="text"
                 name="authKey"
-                value={configUser.authKey}
+                value={configUser?.authKey}
                 onChange={handleChange}
                 startAdornment={
                   <InputAdornment position="start">
@@ -151,7 +119,7 @@ const ConfigView = () => {
           <Paper variant="outlined" sx={{ p: 3, textAlign: "center" }}>
             <Typography variant="subtitle1">Lista de usuarios</Typography>
 
-            <ListUsers users={users} userReports={configUser.userReports} />
+            <ListUsers users={users} userReports={configUser?.userReports ? configUser.userReports : []} />
           </Paper>
         </Grid>
       </Grid>

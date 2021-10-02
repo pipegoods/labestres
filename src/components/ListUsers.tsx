@@ -9,7 +9,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import { doc, updateDoc } from "firebase/firestore";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { db } from "../config/firebaseConfig";
 import { AuthContext } from "../context/AuthProvider";
 import { IUser } from "../interfaces/IUser";
@@ -20,9 +20,13 @@ interface Props {
 }
 
 const ListUsers = ({ users, userReports }: Props) => {
-  const [checked, setChecked] = React.useState<string[]>(userReports);
+  const [checked, setChecked] = React.useState<string[]>([]);
   const [change, setchange] = React.useState(false);
   const { user } = useContext(AuthContext);
+  
+  useEffect(() => {
+    setChecked(userReports);
+  }, [userReports])
 
   const handleToggle = (value: string) => () => {
     setchange(true);
@@ -55,35 +59,40 @@ const ListUsers = ({ users, userReports }: Props) => {
         sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
       >
         {users
-          .filter((c) => c.uid !== user?.uid)
-          .map((value) => {
-            const labelId = `checkbox-list-secondary-label-${value}`;
-            return (
-              <ListItem
-                key={value.uid}
-                secondaryAction={
-                  <Checkbox
-                    edge="end"
-                    onChange={handleToggle(value.uid)}
-                    checked={checked.indexOf(value.uid) !== -1}
-                    inputProps={{ "aria-labelledby": labelId }}
-                  />
-                }
-                disablePadding
-              >
-                <ListItemButton>
-                  <ListItemAvatar>
-                    <Avatar alt={`Avatar n°${value.name}`} src={value.photo} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    id={labelId}
-                    primary={value.name}
-                    secondary={value.email}
-                  />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
+          ? users
+              .filter((c) => c.uid !== user?.uid)
+              .map((value) => {
+                const labelId = `checkbox-list-secondary-label-${value}`;
+                return (
+                  <ListItem
+                    key={value.uid}
+                    secondaryAction={
+                      <Checkbox
+                        edge="end"
+                        onChange={handleToggle(value.uid)}
+                        checked={checked.indexOf(value.uid) !== -1}
+                        inputProps={{ "aria-labelledby": labelId }}
+                      />
+                    }
+                    disablePadding
+                  >
+                    <ListItemButton>
+                      <ListItemAvatar>
+                        <Avatar
+                          alt={`Avatar n°${value.name}`}
+                          src={value.photo}
+                        />
+                      </ListItemAvatar>
+                      <ListItemText
+                        id={labelId}
+                        primary={value.name}
+                        secondary={value.email}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })
+          : null}
       </List>
       {change ? (
         <Button onClick={saveChanges} variant="contained">

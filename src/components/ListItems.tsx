@@ -39,53 +39,62 @@ export const MainListItems = ({
   return (
     <div>
       <ListSubheader inset>Reportes anteriores</ListSubheader>
-      {reportes
-        .filter((c) => c.idUser === user?.uid)
-        .map((r) => (
-          <ListItem button key={r.id} onClick={() => toogleReporte(r)}>
-            <ListItemIcon>
-              <Avatar
-                sx={
-                  reporteSelect.id === r.id
-                    ? { backgroundColor: theme.palette.primary.dark }
-                    : null
-                }
-              >
-                <DirectionsRunIcon color={darkMode ? "inherit" : "primary"} />
-              </Avatar>
-            </ListItemIcon>
-            <ListItemText
-              primary={r.nombreActividad}
-              secondary="Sep 1, 2021 : 13:30"
-            />
-          </ListItem>
-        ))}
-      {configUser?.userReports.length ? (
+      {reportes.length > 0
+        ? reportes
+            .filter((c) => c.idUser === user?.uid)
+            .map((r) => (
+              <ListItem button key={r.id} onClick={() => toogleReporte(r)}>
+                <ListItemIcon>
+                  <Avatar
+                    sx={
+                      reporteSelect.id === r.id
+                        ? { backgroundColor: theme.palette.primary.dark }
+                        : null
+                    }
+                  >
+                    <DirectionsRunIcon
+                      color={darkMode ? "inherit" : "primary"}
+                    />
+                  </Avatar>
+                </ListItemIcon>
+                <ListItemText
+                  primary={r.nombreActividad}
+                  secondary="Sep 1, 2021 : 13:30"
+                />
+              </ListItem>
+            ))
+        : null}
+
+      {configUser?.userReports ? (
         <ListSubheader inset>Reportes suscritos</ListSubheader>
       ) : null}
-      {reportes
-        .filter((c) => configUser?.userReports.includes(c.idUser))
-        .map((r) => (
-          <ListItem button key={r.id} onClick={() => toogleReporte(r)}>
-            <ListItemIcon>
-              <Avatar
-                sx={
-                  reporteSelect.id === r.id
-                    ? { backgroundColor: theme.palette.primary.dark }
-                    : null
-                }
-              >
-                <DirectionsRunIcon color={darkMode ? "inherit" : "primary"} />
-              </Avatar>
-            </ListItemIcon>
-            <ListItemText
-              primary={r.nombreActividad}
-              secondary={users
-                .find((user) => user.uid === r.idUser)
-                ?.name.substring(0, 20)}
-            />
-          </ListItem>
-        ))}
+      {configUser?.userReports
+        ? reportes
+            .filter((c) => configUser?.userReports.includes(c.idUser))
+            .map((r) => (
+              <ListItem button key={r.id} onClick={() => toogleReporte(r)}>
+                <ListItemIcon>
+                  <Avatar
+                    sx={
+                      reporteSelect.id === r.id
+                        ? { backgroundColor: theme.palette.primary.dark }
+                        : null
+                    }
+                  >
+                    <DirectionsRunIcon
+                      color={darkMode ? "inherit" : "primary"}
+                    />
+                  </Avatar>
+                </ListItemIcon>
+                <ListItemText
+                  primary={r.nombreActividad}
+                  secondary={users
+                    .find((user) => user.uid === r.idUser)
+                    ?.name.substring(0, 20)}
+                />
+              </ListItem>
+            ))
+        : null}
     </div>
   );
 };

@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { useHistory } from "react-router-dom";
+import useLocalStorage from "../hooks/useLocalStorage";
+import { IUserConifg } from "../components/ConfigView";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../config/firebaseConfig";
 
 type ContextProps = {
   user: User | null;
   authenticated: boolean;
   setUser: any;
   loadingAuthState: boolean;
+  configUser: IUserConifg;
+  setConfigUser: any;
 };
 
 export const AuthContext = React.createContext<Partial<ContextProps>>({});
@@ -14,7 +20,42 @@ export const AuthContext = React.createContext<Partial<ContextProps>>({});
 export const AuthProvider = ({ children }: any) => {
   const [user, setUser] = useState<User | null>(null as User | null);
   const [loadingAuthState, setLoadingAuthState] = useState<boolean>(true);
+  const [configUser, setConfigUser] = useLocalStorage<IUserConifg>(
+    "configUser",
+    {
+      uid: user ? user?.uid : "",
+      minuteIntervalos: "1",
+      authKey: "",
+      userReports: [],
+    }
+  );
+
   const history = useHistory();
+
+  const obtenerConfigUser = async (userConfirm : User) => {
+    const docRef = doc(db, "users", userConfirm.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+      let { minuteIntervalos, authKey, userReports } = docSnap.data();
+      setConfigUser({
+        minuteIntervalos: minuteIntervalos ? minuteIntervalos : 1,
+        authKey: authKey ? authKey : "",
+        uid: docSnap.id,
+        userReports: userReports,
+      });
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("No such document!");
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      obtenerConfigUser(user);
+    }
+  }, [user]);
 
   useEffect(() => {
     const auth = getAuth();
@@ -25,7 +66,8 @@ export const AuthProvider = ({ children }: any) => {
         // const uid = user.uid;
         setUser(user);
         setLoadingAuthState(false);
-        console.log('Usuario ya autenticado: ', user.email);
+        console.log("Usuario ya autenticado: ", user.email);
+
         history.push("/dashboard");
       } else {
         // User is signed out
@@ -42,6 +84,8 @@ export const AuthProvider = ({ children }: any) => {
         authenticated: user !== null,
         setUser,
         loadingAuthState,
+        configUser,
+        setConfigUser
       }}
     >
       {children}

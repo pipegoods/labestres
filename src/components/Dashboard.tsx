@@ -18,9 +18,7 @@ import {
   collection,
   doc,
   getDoc,
-  getDocs,
   onSnapshot,
-  orderBy,
   query,
   Timestamp,
 } from "firebase/firestore";
@@ -40,8 +38,9 @@ import {
 } from "@mui/material";
 import ViewReport from "./ViewReport";
 import { IViewDashboard } from "../interfaces/IDashboard";
-import ConfigView from "./ConfigView";
+import ConfigView, { IUserConifg } from "./ConfigView";
 import NewReport from "./NewReport";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 const drawerWidth: number = 240;
 
@@ -111,7 +110,6 @@ function DashboardContent() {
   const [registro, setregistro] = useState<IRegistro[]>([]);
   const [reporteSelected, setreporteSelected] =
     useState<IReporte>(initialReporte);
-  const [loader, setloader] = useState<boolean>(false);
   const [viewDashboard, setViewDashboard] = useState<IViewDashboard>({
     viewReportes: false,
     viewCrear: true,
@@ -129,7 +127,8 @@ function DashboardContent() {
       viewReportes: true,
     });
     setreporteSelected(reporteToogle);
-    setregistro(reporteSelected.registro);
+    setregistro(reporteToogle.registro);
+    
   };
 
   useEffect(() => {
@@ -149,7 +148,7 @@ function DashboardContent() {
               nombreActividad: docITEM.data().nombreActividad,
               createdAt: docITEM.data().createdAt,
               idUser: docITEM.data().idUser,
-              registro: [...docITEM.data().registro]
+              registro: docITEM.data().registro ? [...docITEM.data().registro] : []
             },
           ]);
         });
@@ -157,6 +156,7 @@ function DashboardContent() {
     };
 
     obtenerDocumentos();
+    
   }, [history, user]);
 
   return (
@@ -269,12 +269,12 @@ function DashboardContent() {
         {viewDashboard.viewReportes ? (
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
-              <ViewReport loader={loader} registro={registro} largeBpm={12} />
+              <ViewReport loader={false} registro={registro} largeBpm={9} reporte={reporteSelected} />
             </Grid>
           </Container>
         ) : null}
 
-        {viewDashboard.viewCrear ? <NewReport /> : null}
+        {viewDashboard.viewCrear ? <NewReport toggleDashboard={setViewDashboard} /> : null}
 
         {viewDashboard.viewConfig ? <ConfigView /> : null}
 

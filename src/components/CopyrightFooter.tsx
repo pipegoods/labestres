@@ -11,7 +11,7 @@ const CopyrightFooter = (props: any) => {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
+      <Link color="inherit" href="https://github.com/pipegoods/labestres">
         IoT - Estres Laboral
       </Link>{" "}
       {new Date().getFullYear()}
