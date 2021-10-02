@@ -67,7 +67,7 @@ const ConfigView = () => {
         Guardar Cambios
       </Button>
       <Grid container spacing={1} sx={{ mt: 3 }}>
-        <Grid item xs={3}>
+        <Grid item xs={12} md={12} lg={3}>
           <Paper variant="outlined" sx={{ p: 3, textAlign: "center" }}>
             <Typography variant="subtitle1">Separar intervalos RR</Typography>
             <Typography variant="subtitle2">Tiempo en minutos</Typography>
@@ -88,7 +88,7 @@ const ConfigView = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={4}>
+        <Grid item xs={12} md={12} lg={4}>
           <Paper variant="outlined" sx={{ p: 3, textAlign: "center" }}>
             <Typography variant="subtitle1">Auth key Mi Band 4/5/6</Typography>
             <Link
@@ -115,7 +115,7 @@ const ConfigView = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={5}>
+        <Grid item xs={12} md={12} lg={5}>
           <Paper variant="outlined" sx={{ p: 3, textAlign: "center" }}>
             <Typography variant="subtitle1">Lista de usuarios</Typography>
 
