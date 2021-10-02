@@ -18,6 +18,7 @@ import { IViewDashboard } from "../interfaces/IDashboard";
 import { AuthContext } from "../context/AuthProvider";
 import { IUserConifg } from "./ConfigView";
 import useUsers from "../hooks/useUsers";
+import { Timestamp } from "@firebase/firestore";
 
 interface PropsMain {
   reportes: IReporte[];
@@ -34,6 +35,18 @@ export const MainListItems = ({
   const { user } = React.useContext(AuthContext);
   const configUser = useReadLocalStorage<IUserConifg>("configUser");
   const { users } = useUsers();
+
+  const formatDate = ( date : Date) => {
+    let day = date.getDate()
+    let month = date.getMonth() + 1
+    let year = date.getFullYear()
+    
+    if(month < 10){
+      return `${day}/0${month}/${year}`
+    }else{
+      return `${day}/${month}/${year}`
+    }
+  }
 
   const theme = useTheme();
   return (
@@ -59,7 +72,7 @@ export const MainListItems = ({
                 </ListItemIcon>
                 <ListItemText
                   primary={r.nombreActividad}
-                  secondary="Sep 1, 2021 : 13:30"
+                  secondary={formatDate(r.createdAt.toDate())}
                 />
               </ListItem>
             ))
