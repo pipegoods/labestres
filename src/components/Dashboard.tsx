@@ -38,9 +38,8 @@ import {
 } from "@mui/material";
 import ViewReport from "./ViewReport";
 import { IViewDashboard } from "../interfaces/IDashboard";
-import ConfigView, { IUserConifg } from "./ConfigView";
+import ConfigView from "./ConfigView";
 import NewReport from "./NewReport";
-import useLocalStorage from "../hooks/useLocalStorage";
 
 const drawerWidth: number = 240;
 
@@ -103,11 +102,11 @@ function DashboardContent() {
     createdAt: Timestamp.now(),
     idUser: "",
     registro: [],
+    status: false,
   };
 
   const [open, setOpen] = useState(true);
   const [reportes, setReportes] = useState<IReporte[]>([]);
-  const [registro, setregistro] = useState<IRegistro[]>([]);
   const [reporteSelected, setreporteSelected] =
     useState<IReporte>(initialReporte);
   const [viewDashboard, setViewDashboard] = useState<IViewDashboard>({
@@ -127,8 +126,6 @@ function DashboardContent() {
       viewReportes: true,
     });
     setreporteSelected(reporteToogle);
-    setregistro(reporteToogle.registro);
-    
   };
 
   useEffect(() => {
@@ -148,7 +145,10 @@ function DashboardContent() {
               nombreActividad: docITEM.data().nombreActividad,
               createdAt: docITEM.data().createdAt,
               idUser: docITEM.data().idUser,
-              registro: docITEM.data().registro ? [...docITEM.data().registro] : []
+              registro: docITEM.data().registro
+                ? [...docITEM.data().registro]
+                : [],
+              status: docITEM.data().status,
             },
           ]);
         });
@@ -156,7 +156,6 @@ function DashboardContent() {
     };
 
     obtenerDocumentos();
-    
   }, [history, user]);
 
   return (
@@ -269,12 +268,23 @@ function DashboardContent() {
         {viewDashboard.viewReportes ? (
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
-              <ViewReport loader={false} registro={registro} largeBpm={9} reporte={reporteSelected} />
+              <ViewReport
+                loader={false}
+                registro={
+                  reportes.find((r) => r.id === reporteSelected.id)?.registro
+                }
+                largeBpm={9}
+                reporte={
+                  reportes.find((r) => r.id === reporteSelected.id)
+                }
+              />
             </Grid>
           </Container>
         ) : null}
 
-        {viewDashboard.viewCrear ? <NewReport toggleDashboard={setViewDashboard} /> : null}
+        {viewDashboard.viewCrear ? (
+          <NewReport toggleDashboard={setViewDashboard} />
+        ) : null}
 
         {viewDashboard.viewConfig ? <ConfigView /> : null}
 

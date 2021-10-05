@@ -1,4 +1,11 @@
-import { Grid, GridSize, Paper, Skeleton, Typography } from "@mui/material";
+import {
+  Box,
+  Grid,
+  GridSize,
+  Paper,
+  Skeleton,
+  Typography,
+} from "@mui/material";
 import React from "react";
 import useReadLocalStorage from "../hooks/useReadLocalStorage";
 import { IRegistro, IReporte } from "../interfaces/IReporte";
@@ -12,7 +19,7 @@ import { IUserConifg } from "./ConfigView";
 
 interface Props {
   loader: boolean;
-  registro: IRegistro[];
+  registro: IRegistro[] | undefined;
   largeBpm: number;
   reporte?: IReporte;
 }
@@ -21,13 +28,15 @@ const ViewReport = ({ loader, registro, largeBpm, reporte }: Props) => {
   const configUser = useReadLocalStorage<IUserConifg>("configUser");
 
   const getDuracion = () => {
-    const ultima: Date = registro[registro.length - 1].createdAt.toDate();
-    const primera: Date = registro[0].createdAt.toDate();
+    if (registro) {
+      const ultima: Date = registro[registro.length - 1].createdAt.toDate();
+      const primera: Date = registro[0].createdAt.toDate();
 
-    const diff = Math.abs(ultima.getTime() - primera.getTime());
-    var minutes = Math.floor(diff / 60000);
-    var seconds = ((diff % 60000) / 1000).toFixed(0);
-    return minutes + ":" + (diff < 10 ? "0" : "") + seconds;
+      const diff = Math.abs(ultima.getTime() - primera.getTime());
+      var minutes = Math.floor(diff / 60000);
+      var seconds = ((diff % 60000) / 1000).toFixed(0);
+      return minutes + ":" + (diff < 10 ? "0" : "") + seconds;
+    }
   };
 
   return (
@@ -51,7 +60,7 @@ const ViewReport = ({ loader, registro, largeBpm, reporte }: Props) => {
             </>
           ) : (
             <ChartComponent
-              data={timestamptodate(registro)}
+              data={registro ? timestamptodate(registro) : []}
               x="createdAt"
               y="bpm"
               titulo="Ritmo Cardiaco"
@@ -84,10 +93,22 @@ const ViewReport = ({ loader, registro, largeBpm, reporte }: Props) => {
             <Typography variant="subtitle1" color="primary">
               Duración: {getDuracion()} minutos
             </Typography>
-      
+
             <Typography>
               Minutos de cada intervalo: {configUser?.minuteIntervalos}
             </Typography>
+
+            {reporte.status ? (
+              <Box sx={{ mt: "auto", display: "flex", gap: 2 }}>
+                <Typography>Captura en tiempo real:</Typography>
+                <Skeleton
+                  sx={{ bgcolor: "red" }}
+                  variant="circular"
+                  width={20}
+                  height={20}
+                />
+              </Box>
+            ) : null}
           </Paper>
         </Grid>
       ) : null}
@@ -106,7 +127,7 @@ const ViewReport = ({ loader, registro, largeBpm, reporte }: Props) => {
             <Skeleton variant="text" width="100%" height="100%" />
           ) : (
             <ChartComponent
-              data={timestamptodate(registro)}
+              data={registro ? timestamptodate(registro) : []}
               x="createdAt"
               y="rr"
               titulo="Variación del RR"
@@ -125,7 +146,7 @@ const ViewReport = ({ loader, registro, largeBpm, reporte }: Props) => {
             height: 240,
           }}
         >
-          {registro.length > 0 ? (
+          {registro ? (
             <ChartComponent
               data={calcularIDM(
                 separarIntervalos(

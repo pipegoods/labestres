@@ -87,46 +87,50 @@ const agregaMinutos = (dt: Date, minutos: number) => {
 };
 
 export const separarIntervalos = (
-  arrProps: IRegistro[],
+  arrProps: IRegistro[] | undefined,
   minutoIntervao: number
 ) => {
-  const arr = arrProps.slice();
-  const arrReturn: RegistroIntervalo[] = [];
-  let ultimoDate: Date = agregaMinutos(
-    arr[0].createdAt.toDate(),
-    minutoIntervao
-  );
-  let arrRR: number[] = [];
-  let bandera: boolean = false;
-  arr.forEach((registro) => {
-    if (registro.createdAt.toDate() <= ultimoDate) {
-      arrRR.push(registro.rr);
-    } else {
-      bandera = true;
+  const arr = arrProps ? arrProps.slice() : [];
+  if (arr.length > 0) {
+    const arrReturn: RegistroIntervalo[] = [];
+    let ultimoDate: Date = agregaMinutos(
+      arr[0].createdAt.toDate(),
+      minutoIntervao
+    );
+    let arrRR: number[] = [];
+    let bandera: boolean = false;
+    arr.forEach((registro) => {
+      if (registro.createdAt.toDate() <= ultimoDate) {
+        arrRR.push(registro.rr);
+      } else {
+        bandera = true;
+        arrReturn.push({
+          idm: 0,
+          listaRR: arrRR,
+          hora:
+            registro.createdAt.toDate().getHours() +
+            ":" +
+            registro.createdAt.toDate().getMinutes(),
+          is: 0,
+        });
+        arrRR = [];
+        ultimoDate = agregaMinutos(registro.createdAt.toDate(), minutoIntervao);
+      }
+    });
+
+    if (!bandera) {
       arrReturn.push({
         idm: 0,
         listaRR: arrRR,
-        hora:
-          registro.createdAt.toDate().getHours() +
-          ":" +
-          registro.createdAt.toDate().getMinutes(),
+        hora: arr[0].createdAt.toDate().toString(),
         is: 0,
       });
-      arrRR = [];
-      ultimoDate = agregaMinutos(registro.createdAt.toDate(), minutoIntervao);
     }
-  });
 
-  if (!bandera) {
-    arrReturn.push({
-      idm: 0,
-      listaRR: arrRR,
-      hora: arr[0].createdAt.toDate().toString(),
-      is: 0,
-    });
+    return arrReturn;
+  } else {
+    return [];
   }
-
-  return arrReturn;
 };
 
 export const calcularIDM = (arrProps: RegistroIntervalo[]) => {

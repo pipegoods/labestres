@@ -7,7 +7,13 @@ import * as firestore from "firebase/firestore";
 import ViewReport from "./ViewReport";
 import { IUserConifg } from "./ConfigView";
 import useReadLocalStorage from "../hooks/useReadLocalStorage";
-import { addDoc, arrayUnion, collection, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  arrayUnion,
+  collection,
+  DocumentReference,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 import { AuthContext } from "../context/AuthProvider";
 import { IViewDashboard } from "../interfaces/IDashboard";
@@ -32,6 +38,7 @@ const NewReport = ({ toggleDashboard }: Props) => {
   const [nombreActividad, setnombreActividad] = useState("");
   const [registro, setregistro] = useState<IRegistro[]>([]);
   const [open, setopen] = React.useState(true);
+  const [docIdReport, setdocIdReport] = useState<DocumentReference>();
 
   const conectar = async () => {
     console.log("Estoy conectando!!");
@@ -41,8 +48,9 @@ const NewReport = ({ toggleDashboard }: Props) => {
         idUser: user?.uid,
         createdAt: firestore.Timestamp.now(),
         nombreActividad,
+        status: true,
       });
-
+      setdocIdReport(docRef);
       window.addEventListener("heartrate", async (e: CustomEventInit) => {
         console.log("BPM ACTUAL:", e.detail);
         console.log("RR:", 60000 / e.detail);
@@ -97,6 +105,12 @@ const NewReport = ({ toggleDashboard }: Props) => {
     try {
       await window.miband?.onDisconnectButtonClick();
       setstateMiband(false);
+
+      if (docIdReport) {
+        await updateDoc(docIdReport, {
+          status: false
+        });
+      }
     } catch (e: any) {
       alert(e.message);
     }
