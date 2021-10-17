@@ -1,4 +1,3 @@
-import React from "react";
 import { ThemeProvider } from "@mui/material";
 import { theme, themeDark } from "./config/ThemeConfig";
 import useDarkMode from "./hooks/useDarkMode";

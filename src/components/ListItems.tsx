@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useContext } from 'react'
 import SettingsIcon from "@mui/icons-material/Settings";
 import DirectionsRunIcon from "@mui/icons-material/DirectionsRun";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -18,7 +18,6 @@ import { IViewDashboard } from "../interfaces/IDashboard";
 import { AuthContext } from "../context/AuthProvider";
 import { IUserConifg } from "./ConfigView";
 import useUsers from "../hooks/useUsers";
-import { Timestamp } from "@firebase/firestore";
 
 interface PropsMain {
   reportes: IReporte[];
@@ -32,7 +31,7 @@ export const MainListItems = ({
   reporteSelect,
 }: PropsMain) => {
   const darkMode = useReadLocalStorage("darkMode");
-  const { user } = React.useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const configUser = useReadLocalStorage<IUserConifg>("configUser");
   const { users } = useUsers();
 

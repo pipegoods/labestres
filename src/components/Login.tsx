@@ -1,10 +1,8 @@
-import React, { useContext } from "react";
-import Avatar from "@mui/material/Avatar";
+import { useContext } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import CopyrightFooter from "./CopyrightFooter";
 import Button from "@mui/material/Button";
 import GoogleIcon from "@mui/icons-material/Google";
@@ -19,10 +17,15 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
+import estresLaboralPNG from "../assets/estres-laboral-app.png";
+import estresLaboralWhitePNG from "../assets/estrs-laboral-app-white.png";
+import useReadLocalStorage from "../hooks/useReadLocalStorage";
 
 export default function Login() {
   const authContext = useContext(AuthContext);
   const history = useHistory();
+  const isDarkMode  = useReadLocalStorage("darkMode");
+
 
   const saveDataUser = async (user: User) => {
     const docRef = doc(db, "users", user.uid);
@@ -78,6 +81,7 @@ export default function Login() {
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
+
       <Box
         sx={{
           marginTop: 8,
@@ -86,9 +90,15 @@ export default function Login() {
           alignItems: "center",
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-          <FavoriteIcon />
-        </Avatar>
+        <Box
+          component="img"
+          src={isDarkMode ? estresLaboralWhitePNG : estresLaboralPNG}
+          sx={{
+            width: 250,
+            height: 250,
+            mb: 5
+          }}
+        ></Box>
         <Typography component="h1" variant="h5">
           Iniciar sesión
         </Typography>

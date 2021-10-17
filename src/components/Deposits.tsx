@@ -1,4 +1,4 @@
-import * as React from "react";
+import { Fragment } from 'react'
 import Title from "./Title";
 import BluetoothIcon from "@mui/icons-material/Bluetooth";
 import { Button, TextField, Typography } from "@mui/material";
@@ -26,7 +26,7 @@ export default function Deposits({
 }: Props) {
 
   return (
-    <React.Fragment>
+    <Fragment>
       <Title>
         Conectar Mi Band <BluetoothIcon />{" "}
       </Title>
@@ -59,6 +59,6 @@ export default function Deposits({
           </Button>
         )}
       </div>
-    </React.Fragment>
+    </Fragment>
   );
 }

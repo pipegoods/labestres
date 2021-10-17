@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -6,16 +7,22 @@ import {
   Skeleton,
   Typography,
 } from "@mui/material";
-import React from "react";
 import useReadLocalStorage from "../hooks/useReadLocalStorage";
 import { IRegistro, IReporte } from "../interfaces/IReporte";
 import {
   calcularIDM,
+  calculatepRR50,
+  medianRR,
+  porcentageIS,
   separarIntervalos,
+  standartDesviation,
   timestamptodate,
 } from "../lib/ecuaciones.lib";
+import CardStatistics from "./CardStatistics";
 import ChartComponent from "./ChartComponent";
 import { IUserConifg } from "./ConfigView";
+import PieChartIS from "./PieChartIS";
+import useUsers from "../hooks/useUsers";
 
 interface Props {
   loader: boolean;
@@ -26,6 +33,23 @@ interface Props {
 
 const ViewReport = ({ loader, registro, largeBpm, reporte }: Props) => {
   const configUser = useReadLocalStorage<IUserConifg>("configUser");
+  const { users } = useUsers();
+
+  const [porIS, setporIS] = useState<{ name: string; value: number }[]>([]);
+
+  useEffect(() => {
+
+    setporIS(
+      porcentageIS(
+        calcularIDM(
+          separarIntervalos(
+            registro,
+            configUser ? parseInt(configUser.minuteIntervalos) : 1
+          )
+        )
+      )
+    );
+  }, [registro, configUser]);
 
   const getDuracion = () => {
     if (registro) {
@@ -97,6 +121,9 @@ const ViewReport = ({ loader, registro, largeBpm, reporte }: Props) => {
             <Typography>
               Minutos de cada intervalo: {configUser?.minuteIntervalos}
             </Typography>
+            <Typography>
+              Empleador: {users.find(r => r.uid === reporte.idUser)?.name}
+            </Typography>
 
             {reporte.status ? (
               <Box sx={{ mt: "auto", display: "flex", gap: 2 }}>
@@ -164,6 +191,42 @@ const ViewReport = ({ loader, registro, largeBpm, reporte }: Props) => {
           )}
         </Paper>
       </Grid>
+
+      {/* Estadisticas !! */}
+
+      {/** MEDIA */}
+      {registro ? (
+        <>
+          <CardStatistics
+            variant="h1"
+            value={medianRR(registro)}
+            copy="Media RR"
+          />
+          <CardStatistics variant="h1" value={`${calculatepRR50(registro)}%`} copy="pRR50" />
+          <CardStatistics
+            variant="h2"
+            value={standartDesviation(registro).toFixed(2).toString()}
+            copy="Desviacion estandar RR"
+          />
+          <Grid item xs={12} md={6} lg={3}>
+            <Paper
+              sx={{
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                height: 300,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Typography variant="subtitle1"> Indice de estres mental (%)</Typography>
+
+              <PieChartIS arr={porIS} />
+            </Paper>
+          </Grid>
+        </>
+      ) : null}
+
       {/* Recent Orders */}
       {/* <Grid item xs={12}>
           <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>

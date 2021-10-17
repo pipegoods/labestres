@@ -1,5 +1,5 @@
 import { Container, Grid, Link, Paper, Typography } from "@mui/material";
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { IRegistro } from "../interfaces/IReporte";
 import MiBand5 from "../lib/miband";
 import Deposits from "./Deposits";
@@ -37,7 +37,7 @@ const NewReport = ({ toggleDashboard }: Props) => {
   const [stateMiband, setstateMiband] = useState<boolean>(false);
   const [nombreActividad, setnombreActividad] = useState("");
   const [registro, setregistro] = useState<IRegistro[]>([]);
-  const [open, setopen] = React.useState(true);
+  const [open, setopen] = useState(true);
   const [docIdReport, setdocIdReport] = useState<DocumentReference>();
 
   const conectar = async () => {

@@ -9,7 +9,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import { doc, updateDoc } from "firebase/firestore";
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { db } from "../config/firebaseConfig";
 import { AuthContext } from "../context/AuthProvider";
 import { IUser } from "../interfaces/IUser";
@@ -20,8 +20,8 @@ interface Props {
 }
 
 const ListUsers = ({ users, userReports }: Props) => {
-  const [checked, setChecked] = React.useState<string[]>([]);
-  const [change, setchange] = React.useState(false);
+  const [checked, setChecked] = useState<string[]>([]);
+  const [change, setchange] = useState(false);
   const { user } = useContext(AuthContext);
   
   useEffect(() => {

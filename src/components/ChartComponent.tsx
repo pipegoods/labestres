@@ -1,4 +1,4 @@
-import * as React from "react";
+import { Fragment } from 'react'
 import { useTheme } from "@mui/material/styles";
 import {
   LineChart,
@@ -25,7 +25,7 @@ export default function ChartComponent({data, x , y, titulo, typeLine} : Props) 
   const theme = useTheme();
   
   return (
-    <React.Fragment>
+    <Fragment>
       <Title>
         {titulo}
       </Title>
@@ -71,6 +71,6 @@ export default function ChartComponent({data, x , y, titulo, typeLine} : Props) 
           <Tooltip wrapperStyle={{ width: 100, backgroundColor: "#ffcd38", color: "#000" }} />
         </LineChart>
       </ResponsiveContainer>
-    </React.Fragment>
+    </Fragment>
   );
 }

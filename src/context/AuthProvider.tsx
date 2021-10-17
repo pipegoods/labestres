@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, createContext } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { useHistory } from "react-router-dom";
 import useLocalStorage from "../hooks/useLocalStorage";
@@ -15,7 +15,7 @@ type ContextProps = {
   setConfigUser: any;
 };
 
-export const AuthContext = React.createContext<Partial<ContextProps>>({});
+export const AuthContext = createContext<Partial<ContextProps>>({});
 
 export const AuthProvider = ({ children }: any) => {
   const [user, setUser] = useState<User | null>(null as User | null);
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: any) => {
 
   const history = useHistory();
 
-  const obtenerConfigUser = async (userConfirm : User) => {
+  const obtenerConfigUser = async (userConfirm: User) => {
     const docRef = doc(db, "users", userConfirm.uid);
     const docSnap = await getDoc(docRef);
 
@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }: any) => {
         setUser,
         loadingAuthState,
         configUser,
-        setConfigUser
+        setConfigUser,
       }}
     >
       {children}

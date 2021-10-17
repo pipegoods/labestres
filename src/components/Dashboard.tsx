@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-import { styled } from "@mui/material/styles";
+import { useContext, useEffect, useState } from "react";
+import { styled, useTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiDrawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
@@ -14,15 +14,8 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import { MainListItems, SecondaryListItems } from "./ListItems";
 import BluetoothAudioIcon from "@mui/icons-material/BluetoothAudio";
-import {
-  collection,
-  doc,
-  getDoc,
-  onSnapshot,
-  query,
-  Timestamp,
-} from "firebase/firestore";
-import { IRegistro, IReporte } from "../interfaces/IReporte";
+import { collection, onSnapshot, query, Timestamp } from "firebase/firestore";
+import { IReporte } from "../interfaces/IReporte";
 import { db } from "../config/firebaseConfig";
 import CopyrightFooter from "./CopyrightFooter";
 import { useHistory } from "react-router-dom";
@@ -92,6 +85,8 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 function DashboardContent() {
+
+  const theme = useTheme();
   const { toggle } = useDarkMode();
   const { user } = useContext(AuthContext);
 
@@ -197,6 +192,15 @@ function DashboardContent() {
           >
             Hola, {user?.displayName} 😎
           </Typography>
+          <Typography
+            component="h1"
+            variant="h6"
+            color="inherit"
+            noWrap
+            sx={{mx: 3, backgroundColor: theme.palette.primary.main, px: 3, borderRadius: 30}}
+          >
+            Estres laboral App
+          </Typography>
           <IconButton color="inherit" onClick={toggle}>
             <Brightness4Icon />
           </IconButton>
@@ -274,9 +278,7 @@ function DashboardContent() {
                   reportes.find((r) => r.id === reporteSelected.id)?.registro
                 }
                 largeBpm={9}
-                reporte={
-                  reportes.find((r) => r.id === reporteSelected.id)
-                }
+                reporte={reportes.find((r) => r.id === reporteSelected.id)}
               />
             </Grid>
           </Container>

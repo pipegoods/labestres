@@ -161,3 +161,65 @@ export const calcularIDM = (arrProps: RegistroIntervalo[]) => {
 
   return arr;
 };
+
+export const medianRR = (arrRR: IRegistro[]) => {
+  const arr = arrRR.map((c) => c.rr);
+  return MathJS.median(arr);
+};
+
+export const standartDesviation = (arrRR: IRegistro[]) => {
+  const arr = arrRR.map((c) => c.rr);
+  return MathJS.std(arr, "uncorrected");
+};
+
+export const porcentageIS = (arrParam: RegistroIntervalo[]) => {
+  let countStress = 0;
+  let countNormal = 0;
+  let countRelax = 0;
+
+  arrParam.forEach((r) => {
+    switch (r.is) {
+      case 1:
+        countRelax++;
+        break;
+      case 2:
+        countNormal++;
+        break;
+      case 3:
+        countStress++;
+        break;
+      default:
+        break;
+    }
+  });
+
+  return [
+    {
+      name: "Relajado",
+      value: parseInt(((countRelax / arrParam.length) * 100).toFixed(3)),
+    },
+    {
+      name: "Normal",
+      value: parseInt(((countNormal / arrParam.length) * 100).toFixed(3)),
+    },
+    {
+      name: "Estresado",
+      value: parseInt(((countStress / arrParam.length) * 100).toFixed(3)),
+    },
+  ];
+};
+
+export const calculatepRR50 = (arrRR: IRegistro[]) => {
+  let countPar50 = 0;
+  const arr = arrRR.map((c) => c.rr);
+
+  const length = arr.length;
+
+  for (var i = 0; i < length - 1; i++) {
+    if (Math.abs(arr[i] - arr[i + 1]) >= 50) {
+      countPar50++;
+    }
+  }
+
+  return ((countPar50 / length) * 100).toFixed(1);
+};
