@@ -195,7 +195,7 @@ const ViewReport = ({ loader, registro, largeBpm, reporte }: Props) => {
       {/* Estadisticas !! */}
 
       {/** MEDIA */}
-      {registro ? (
+      {registro?.length ? (
         <>
           <CardStatistics
             variant="h1"
