@@ -161,7 +161,7 @@ export const SecondaryListItems = ({ toggleDashboard }: PropsSecon) => {
             <LogoutIcon color={darkMode ? "inherit" : "primary"} />
           </Avatar>
         </ListItemIcon>
-        <ListItemText primary="Cerar sesión" />
+        <ListItemText primary="Cerrar sesión" />
       </ListItem>
     </div>
   );
