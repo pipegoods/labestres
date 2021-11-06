@@ -3,7 +3,7 @@ import {
   RegistroIntervalo,
   RegistroTypeString,
 } from "../interfaces/IReporte";
-import * as MathJS from "mathjs";
+import { mode, median, std } from "mathjs";
 
 // const listadoRR = (arrProps: IRegistro[]) => {
 //   const arr = arrProps.slice();
@@ -15,7 +15,7 @@ import * as MathJS from "mathjs";
 // };
 
 const calcularModaRR = (arrProps: number[]) => {
-  return MathJS.mode(arrProps);
+  return mode(arrProps);
 };
 
 // const arrayMin = (arrProps: IRegistro[]) => {
@@ -164,12 +164,12 @@ export const calcularIDM = (arrProps: RegistroIntervalo[]) => {
 
 export const medianRR = (arrRR: IRegistro[]) => {
   const arr = arrRR.map((c) => c.rr);
-  return MathJS.median(arr);
+  return median(arr);
 };
 
 export const standartDesviation = (arrRR: IRegistro[]) => {
   const arr = arrRR.map((c) => c.rr);
-  return MathJS.std(arr, "uncorrected");
+  return std(arr, "uncorrected");
 };
 
 export const porcentageIS = (arrParam: RegistroIntervalo[]) => {

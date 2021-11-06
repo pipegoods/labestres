@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment } from "react";
 import { useTheme } from "@mui/material/styles";
 import {
   LineChart,
@@ -12,23 +12,32 @@ import {
 import Title from "./Title";
 import { RegistroIntervalo, RegistroTypeString } from "../interfaces/IReporte";
 import { CurveType } from "recharts/types/shape/Curve";
+import { CSVLink } from "react-csv";
+import { Box } from "@mui/material";
 
 interface Props {
-  data : RegistroTypeString[] | RegistroIntervalo[];
-  x : string;
-  y : string;
+  data: RegistroTypeString[] | RegistroIntervalo[];
+  x: string;
+  y: string;
   titulo: string;
   typeLine: CurveType;
 }
 
-export default function ChartComponent({data, x , y, titulo, typeLine} : Props) {
+export default function ChartComponent({
+  data,
+  x,
+  y,
+  titulo,
+  typeLine,
+}: Props) {
   const theme = useTheme();
-  
+
   return (
     <Fragment>
-      <Title>
-        {titulo}
-      </Title>
+      <Box>
+          <CSVLink style={{color: theme.palette.primary.main}} data={data}> Descargar CSV </CSVLink>
+      </Box>
+      <Title>{titulo}</Title>
       <ResponsiveContainer>
         <LineChart
           data={data}
@@ -68,7 +77,13 @@ export default function ChartComponent({data, x , y, titulo, typeLine} : Props) 
             dot={false}
           />
 
-          <Tooltip wrapperStyle={{ width: 100, backgroundColor: "#ffcd38", color: "#000" }} />
+          <Tooltip
+            wrapperStyle={{
+              width: 100,
+              backgroundColor: "#ffcd38",
+              color: "#000",
+            }}
+          />
         </LineChart>
       </ResponsiveContainer>
     </Fragment>
