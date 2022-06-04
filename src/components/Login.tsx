@@ -51,14 +51,12 @@ export default function Login() {
     signInWithPopup(auth, new GoogleAuthProvider())
       .then((result) => {
         // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential ? credential.accessToken : null;
+       // const credential = GoogleAuthProvider.credentialFromResult(result);
+       // const token = credential ? credential.accessToken : null;
         // The signed-in user info.
         const user = result.user;
         // ...
         authContext.setUser(user);
-        console.log(user, "user");
-        console.log("Token: ", token);
 
         saveDataUser(user);
 

@@ -30,11 +30,10 @@ export interface IUserConifg {
 }
 
 const ConfigView = () => {
-  const { user, configUser, setConfigUser } = useContext(AuthContext);
+  const { user, configUser, setConfigUser, isSuperUser } = useContext(AuthContext);
   const { users } = useUsers();
 
   const onSubmit = async () => {
-    console.log(configUser);
     if (configUser) {
       await updateDoc(doc(db, "users", user ? user.uid : ""), {
         minuteIntervalos: parseInt(configUser.minuteIntervalos),
@@ -119,7 +118,15 @@ const ConfigView = () => {
           <Paper variant="outlined" sx={{ p: 3, textAlign: "center" }}>
             <Typography variant="subtitle1">Lista de usuarios</Typography>
 
-            <ListUsers users={users} userReports={configUser?.userReports ? configUser.userReports : []} />
+            { isSuperUser ? (
+              <ListUsers users={users} userReports={configUser?.userReports ? configUser.userReports : []} />
+            ) : (
+              <Typography variant="subtitle2">
+                Solo el administrador puede ver la lista de usuarios
+              </Typography>
+            )}
+
+            
           </Paper>
         </Grid>
       </Grid>

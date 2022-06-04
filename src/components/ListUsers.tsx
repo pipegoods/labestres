@@ -40,7 +40,6 @@ const ListUsers = ({ users, userReports }: Props) => {
     }
 
     setChecked(newChecked);
-    console.log(checked);
   };
 
   const saveChanges = async () => {
@@ -48,7 +47,6 @@ const ListUsers = ({ users, userReports }: Props) => {
       userReports: checked,
     }).then((d) => {
       setchange(false);
-      console.log(d);
     });
   };
 

@@ -41,7 +41,6 @@ const NewReport = ({ toggleDashboard }: Props) => {
   const [docIdReport, setdocIdReport] = useState<DocumentReference>();
 
   const conectar = async () => {
-    console.log("Estoy conectando!!");
     setopen(false);
     if (nombreActividad !== "") {
       const docRef = await addDoc(collection(db, "registroRR"), {
@@ -52,8 +51,6 @@ const NewReport = ({ toggleDashboard }: Props) => {
       });
       setdocIdReport(docRef);
       window.addEventListener("heartrate", async (e: CustomEventInit) => {
-        console.log("BPM ACTUAL:", e.detail);
-        console.log("RR:", 60000 / e.detail);
         setBpm(e.detail);
         setrr(Math.trunc(60000 / e.detail));
         setregistro((old) => [
@@ -99,7 +96,6 @@ const NewReport = ({ toggleDashboard }: Props) => {
   };
 
   const desconectar = async () => {
-    console.log(window.miband);
     setopen(true);
     setnombreActividad("");
     try {

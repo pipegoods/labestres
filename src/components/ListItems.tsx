@@ -31,23 +31,21 @@ export const MainListItems = ({
   reporteSelect,
 }: PropsMain) => {
   const darkMode = useReadLocalStorage("darkMode");
-  const { user } = useContext(AuthContext);
+  const { user, isSuperUser } = useContext(AuthContext);
   const configUser = useReadLocalStorage<IUserConifg>("configUser");
   const { users } = useUsers();
 
-  const formatDate = ( date : Date) => {
+  const formatDate = (date: Date) => {
     let day = date.getDate()
     let month = date.getMonth() + 1
     let year = date.getFullYear()
-    
-    if(month < 10){
+
+    if (month < 10) {
       return `${day}/0${month}/${year}`
-    }else{
+    } else {
       return `${day}/${month}/${year}`
     }
   }
-
-  console.info("reportes", reportes);
 
   const theme = useTheme();
   return (
@@ -55,36 +53,37 @@ export const MainListItems = ({
       <ListSubheader inset>Reportes anteriores</ListSubheader>
       {reportes.length > 0
         ? reportes
-            .filter((c) => c.idUser === user?.uid)
-            .filter((c) => c.registro.length > 0)
-            .map((r) => (
-              <ListItem button key={r.id} onClick={() => toogleReporte(r)}>
-                <ListItemIcon>
-                  <Avatar
-                    sx={
-                      reporteSelect.id === r.id
-                        ? { backgroundColor: theme.palette.primary.dark }
-                        : null
-                    }
-                  >
-                    <DirectionsRunIcon
-                      color={darkMode ? "inherit" : "primary"}
-                    />
-                  </Avatar>
-                </ListItemIcon>
-                <ListItemText
-                  primary={r.nombreActividad}
-                  secondary={formatDate(r.createdAt.toDate())}
-                />
-              </ListItem>
-            ))
+          .filter((c) => c.idUser === user?.uid)
+          .filter((c) => c.registro.length > 0)
+          .map((r) => (
+            <ListItem button key={r.id} onClick={() => toogleReporte(r)}>
+              <ListItemIcon>
+                <Avatar
+                  sx={
+                    reporteSelect.id === r.id
+                      ? { backgroundColor: theme.palette.primary.dark }
+                      : null
+                  }
+                >
+                  <DirectionsRunIcon
+                    color={darkMode ? "inherit" : "primary"}
+                  />
+                </Avatar>
+              </ListItemIcon>
+              <ListItemText
+                primary={r.nombreActividad}
+                secondary={formatDate(r.createdAt.toDate())}
+              />
+            </ListItem>
+          ))
         : null}
 
-      {configUser?.userReports ? (
-        <ListSubheader inset>Reportes suscritos</ListSubheader>
-      ) : null}
-      {configUser?.userReports
-        ? reportes
+      {isSuperUser && (<>
+        {configUser?.userReports ? (
+          <ListSubheader inset>Reportes suscritos</ListSubheader>
+        ) : null}
+        {configUser?.userReports
+          ? reportes
             .filter((c) => configUser?.userReports.includes(c.idUser))
             .map((r) => (
               <ListItem button key={r.id} onClick={() => toogleReporte(r)}>
@@ -109,7 +108,8 @@ export const MainListItems = ({
                 />
               </ListItem>
             ))
-        : null}
+          : null}
+      </>)}
     </div>
   );
 };
@@ -121,10 +121,12 @@ interface PropsSecon {
 export const SecondaryListItems = ({ toggleDashboard }: PropsSecon) => {
   const darkMode = useReadLocalStorage("darkMode");
   const history = useHistory();
+  const { setIsSuperUser } = useContext(AuthContext);
 
   const singOut = (event: any) => {
     event.preventDefault();
 
+    setIsSuperUser(false);
     const auth = getAuth();
     signOut(auth)
       .then(() => {
@@ -134,7 +136,7 @@ export const SecondaryListItems = ({ toggleDashboard }: PropsSecon) => {
       })
       .catch((error) => {
         // An error happened.
-        console.log(error);
+        alert(error);
       });
   };
 

@@ -8,7 +8,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 const PrivateRoute = ({ component: RouteComponent, ...rest } : any) => {
   const { authenticated, loadingAuthState } = useContext(AuthContext);
   if (loadingAuthState) {
-    console.log("LoadingAuthState: ", loadingAuthState);
     return (
       <div>
         <CssBaseline />

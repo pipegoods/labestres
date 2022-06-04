@@ -15,6 +15,8 @@ type ContextProps = {
   setConfigUser: any;
   openPoliticas: boolean;
   setOpenPoliticas: any;
+  isSuperUser: boolean;
+  setIsSuperUser: any;
 };
 
 export const AuthContext = createContext<Partial<ContextProps>>({});
@@ -22,6 +24,7 @@ export const AuthContext = createContext<Partial<ContextProps>>({});
 export const AuthProvider = ({ children }: any) => {
   const [user, setUser] = useState<User | null>(null as User | null);
   const [loadingAuthState, setLoadingAuthState] = useState<boolean>(true);
+  const [isSuperUser, setIsSuperUser] = useState<boolean>(false);
   const [configUser, setConfigUser] = useLocalStorage<IUserConifg>(
     "configUser",
     {
@@ -49,17 +52,20 @@ export const AuthProvider = ({ children }: any) => {
       const docSnap = await getDoc(docRef);
   
       if (docSnap.exists()) {
-        console.log("Document data:", docSnap.data());
-        let { minuteIntervalos, authKey, userReports } = docSnap.data();
+        let { minuteIntervalos, authKey, userReports, rol } = docSnap.data();
         setConfigUser({
           minuteIntervalos: minuteIntervalos ? minuteIntervalos : 1,
           authKey: authKey ? authKey : "",
           uid: docSnap.id,
           userReports: userReports,
         });
+
+        if (rol === "super") {
+          setIsSuperUser(true);
+        }
       } else {
         // doc.data() will be undefined in this case
-        console.log("No such document!");
+        alert("Bienvenido a Estres Laboral App, lee nuestras politicas de privacidad antes de continuar");
       }
     };
     if (user) {
@@ -98,7 +104,9 @@ export const AuthProvider = ({ children }: any) => {
         configUser,
         setConfigUser,
         openPoliticas,
-        setOpenPoliticas
+        setOpenPoliticas,
+        isSuperUser,
+        setIsSuperUser,
       }}
     >
       {children}

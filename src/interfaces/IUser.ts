@@ -5,4 +5,5 @@ export interface IUser {
     minuteIntervalos: number;
     photo: string;
     uid: string;
+    rol?: string;
 }
