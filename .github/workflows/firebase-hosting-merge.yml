@@ -6,6 +6,13 @@ name: Deploy to Firebase Hosting on merge
   push:
     branches:
       - master
+env:
+  REACT_APP_FIREABSE_APIKEY: ${{ secrets.REACT_APP_FIREABSE_APIKEY }}
+  REACT_APP_FIREABSE_AUTHDOMAIN: ${{ secrets.REACT_APP_FIREABSE_AUTHDOMAIN }}
+  REACT_APP_FIREABSE_PROJECTID: miband-estres
+  REACT_APP_FIREABSE_STORAGEBUCKET: miband-estres.appspot.com
+  REACT_APP_FIREABSE_MESSAGINGSENDERID: ${{ secrets.REACT_APP_FIREABSE_MESSAGINGSENDERID }}
+  REACT_APP_FIREABSE_APPID: ${{ secrets.REACT_APP_FIREABSE_APPID }}
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
