@@ -290,6 +290,7 @@ function DashboardContent() {
 
         {viewDashboard.viewConfig ? <ConfigView /> : null}
 
+
         <CopyrightFooter sx={{ pt: 4 }} />
       </Box>
     </Box>

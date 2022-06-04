@@ -13,6 +13,8 @@ type ContextProps = {
   loadingAuthState: boolean;
   configUser: IUserConifg;
   setConfigUser: any;
+  openPoliticas: boolean;
+  setOpenPoliticas: any;
 };
 
 export const AuthContext = createContext<Partial<ContextProps>>({});
@@ -30,31 +32,40 @@ export const AuthProvider = ({ children }: any) => {
     }
   );
 
+  const [openPoliticas, setOpenPoliticas] = useLocalStorage<boolean>(
+    "modalPoliticas",
+    true
+  );
+
+
   const history = useHistory();
 
-  const obtenerConfigUser = async (userConfirm: User) => {
-    const docRef = doc(db, "users", userConfirm.uid);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      console.log("Document data:", docSnap.data());
-      let { minuteIntervalos, authKey, userReports } = docSnap.data();
-      setConfigUser({
-        minuteIntervalos: minuteIntervalos ? minuteIntervalos : 1,
-        authKey: authKey ? authKey : "",
-        uid: docSnap.id,
-        userReports: userReports,
-      });
-    } else {
-      // doc.data() will be undefined in this case
-      console.log("No such document!");
-    }
-  };
+  
 
   useEffect(() => {
+
+    const obtenerConfigUser = async (userConfirm: User) => {
+      const docRef = doc(db, "users", userConfirm.uid);
+      const docSnap = await getDoc(docRef);
+  
+      if (docSnap.exists()) {
+        console.log("Document data:", docSnap.data());
+        let { minuteIntervalos, authKey, userReports } = docSnap.data();
+        setConfigUser({
+          minuteIntervalos: minuteIntervalos ? minuteIntervalos : 1,
+          authKey: authKey ? authKey : "",
+          uid: docSnap.id,
+          userReports: userReports,
+        });
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
+    };
     if (user) {
       obtenerConfigUser(user);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   useEffect(() => {
@@ -86,6 +97,8 @@ export const AuthProvider = ({ children }: any) => {
         loadingAuthState,
         configUser,
         setConfigUser,
+        openPoliticas,
+        setOpenPoliticas
       }}
     >
       {children}

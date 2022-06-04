@@ -114,6 +114,12 @@ export default function Login() {
           </Button>
         </Box>
       </Box>
+      <div>
+        <Typography variant="body2" color="textSecondary" align="center">
+          Toda la información de tu cuenta será guardada en nuestra base de datos
+          de forma segura. <br /> No compartiremos tu información con nadie.
+        </Typography>
+      </div>
       <CopyrightFooter sx={{ mt: "auto" }} />
     </Container>
   );

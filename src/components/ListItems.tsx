@@ -47,6 +47,8 @@ export const MainListItems = ({
     }
   }
 
+  console.info("reportes", reportes);
+
   const theme = useTheme();
   return (
     <div>
@@ -54,6 +56,7 @@ export const MainListItems = ({
       {reportes.length > 0
         ? reportes
             .filter((c) => c.idUser === user?.uid)
+            .filter((c) => c.registro.length > 0)
             .map((r) => (
               <ListItem button key={r.id} onClick={() => toogleReporte(r)}>
                 <ListItemIcon>

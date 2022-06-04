@@ -1,9 +1,13 @@
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
+import ModalLegal from "./ModalLegal";
 
 const CopyrightFooter = (props: any) => {
   return (
-    <Typography
+   
+    <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+       <ModalLegal  />
+       <Typography
       variant="body2"
       color="text.secondary"
       align="center"
@@ -17,6 +21,7 @@ const CopyrightFooter = (props: any) => {
       {new Date().getFullYear()}
       {"."}
     </Typography>
+    </div>
   );
 };
 
